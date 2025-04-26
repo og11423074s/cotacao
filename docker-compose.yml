@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: quotation_db
+    environment:
+      POSTGRES_DB: quotationdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - quotation_network
+
+networks:
+  quotation_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
