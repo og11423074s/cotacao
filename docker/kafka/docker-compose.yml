@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+
+  conduktor-gateway:
+    image: conduktor/conduktor-gateway:latest
+    container_name: conduktor-gateway
+    ports:
+      - "8888:8888"
+    environment:
+      CONDUKTOR_GATEWAY_ADMIN_USERNAME: admin
+      CONDUKTOR_GATEWAY_ADMIN_PASSWORD: admin
+      CONDUKTOR_GATEWAY_KAFKA_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:29092
+      KAFKA_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:29092
+      GATEWAY_SECURITY_PROTOCOL: PLAINTEXT
+      GATEWAY_ADVERTISED_HOST: localhost
+    depends_on:
+      - kafka
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres-conduktor
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: conduktor
+      POSTGRES_PASSWORD: conduktor
+      POSTGRES_DB: conduktor
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  conduktor-platform:
+    image: conduktor/conduktor-platform:latest
+    container_name: conduktor-platform
+    ports:
+      - "8081:8081"
+    environment:
+      CDK_ADMIN_EMAIL: admin@admin.io
+      CDK_ADMIN_PASSWORD: admin
+      CDK_DATABASE_URL: "postgresql://conduktor:conduktor@postgres:5432/conduktor"
+      CDK_CLUSTERS_0_ID: local
+      CDK_CLUSTERS_0_NAME: local
+      CDK_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      CDK_CLUSTERS_0_COLOR: "#0013E7"
+    depends_on:
+      - postgres
+      - kafka
+
+volumes:
+  postgres_data:
+
+
+
+

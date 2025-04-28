@@ -1,6 +1,5 @@
 
 # kafka configuration
-
 mp:
   messaging:
     outgoing:
@@ -21,15 +20,14 @@ quarkus:
     password: 123456
     jdbc:
       url: jdbc:postgresql://localhost:5432/quotationdb
-
   hibernate-orm:
     database:
       generation: update
 
   # rest client configuration
   rest-client:
-    "org.br.mineradora.client.CurrencyPriceClient":
-      url: https://economia.awesomeapi.com.br
+    currency-api:
+      uri: https://economia.awesomeapi.com.br
 
 currency-price-client:
   apikey: 5e45f2b6cb297e6973928ba06810930c402f15f25e85998f77631d447a80b1fa

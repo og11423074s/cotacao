@@ -8,24 +8,24 @@ repositories {
     mavenLocal()
 }
 
+group = 'org.br.mineradora'
+version = '1.0.0-SNAPSHOT'
+
 dependencies {
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation 'io.quarkus:quarkus-config-yaml'
     implementation 'io.quarkus:quarkus-hibernate-orm-panache'
     implementation 'io.quarkus:quarkus-jdbc-postgresql'
     implementation 'io.quarkus:quarkus-arc'
-    implementation 'io.quarkus:quarkus-hibernate-orm'
     implementation 'io.quarkus:quarkus-rest-client-jackson'
     implementation 'io.quarkus:quarkus-messaging-kafka'
+    implementation 'io.quarkus:quarkus-quartz'
 
+    compileOnly 'org.projectlombok:lombok:1.18.38'
+    annotationProcessor 'org.projectlombok:lombok:1.18.38'
 
     testImplementation 'io.quarkus:quarkus-junit5'
-
-    compileOnly("org.projectlombok:lombok:1.18.38")
 }
-
-group 'org.br.mineradora'
-version '1.0.0-SNAPSHOT'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -35,6 +35,7 @@ java {
 test {
     systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
 }
+
 compileJava {
     options.encoding = 'UTF-8'
     options.compilerArgs << '-parameters'
